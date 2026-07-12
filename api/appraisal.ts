@@ -5,28 +5,23 @@ export default async function handler(
   res: VercelResponse
 ) {
   try {
-    const { domain } = req.body;
+    const domain = req.query.domain as string;
 
     const response = await fetch(
-      "PUT_YOUR_ATOM_APPRAISAL_ENDPOINT_HERE",
+      `https://www.atom.com/api/marketplace/domain-appraisal?domain=${encodeURIComponent(domain)}`,
       {
-        method: "POST",
         headers: {
-          Authorization: `Bearer ${process.env.ATOM_APPRAISAL_API_KEY}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          domain
-        })
+          Authorization: `Bearer ${process.env.ATOM_APPRAISAL_API_KEY}`
+        }
       }
     );
 
     const data = await response.json();
 
-    return res.status(200).json(data);
-  } catch (err) {
+    return res.status(response.status).json(data);
+  } catch (error) {
     return res.status(500).json({
-      error: "Unable to appraise domain"
+      error: "Unable to fetch appraisal"
     });
   }
 }
