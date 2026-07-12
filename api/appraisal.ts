@@ -5,8 +5,10 @@ export default async function handler(
   res: VercelResponse
 ) {
   try {
+    const { domain } = req.query;
+
     const response = await fetch(
-      "https://www.atom.com/api/marketplace/domain-appraisal",
+      `https://www.atom.com/api/marketplace/domain-appraisal?domain=${domain}`,
       {
         headers: {
           Authorization: `Bearer ${process.env.ATOM_APPRAISAL_API_KEY}`
@@ -14,9 +16,9 @@ export default async function handler(
       }
     );
 
-    const text = await response.text();
+    const data = await response.json();
 
-    return res.status(response.status).send(text);
+    return res.status(response.status).json(data);
   } catch (err: any) {
     return res.status(500).json({
       error: err.message
